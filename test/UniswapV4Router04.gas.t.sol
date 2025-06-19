@@ -9,7 +9,7 @@ import {PathKey} from "../src/libraries/PathKey.sol";
 
 import {Counter} from "@v4-template/src/Counter.sol";
 
-import {ISignatureTransfer, UniswapV4Router04} from "../src/UniswapV4Router04.sol";
+import {ISignatureTransfer, OpinologosRouter} from "../src/UniswapV4Router04.sol";
 
 import {MockCurrencyLibrary} from "./utils/mocks/MockCurrencyLibrary.sol";
 import {DeployPermit2} from "permit2/test/utils/DeployPermit2.sol";
@@ -31,7 +31,7 @@ contract GasTest is SwapRouterFixtures {
     address alice;
     uint256 alicePK;
 
-    UniswapV4Router04 router;
+    OpinologosRouter router;
 
     Counter hook;
 
@@ -48,7 +48,7 @@ contract GasTest is SwapRouterFixtures {
         // Deploy v4 contracts
         Deployers.deployFreshManagerAndRouters();
         DeployPermit2.deployPermit2();
-        router = new UniswapV4Router04(manager, permit2);
+        router = new OpinologosRouter(manager, permit2);
 
         // Create currencies
         (currencyA, currencyB, currencyC, currencyD) = _createSortedCurrencies();
@@ -104,7 +104,7 @@ contract GasTest is SwapRouterFixtures {
         _addLiquidity(hookedPoolKeys, 10_000e18);
         _addLiquidityCSMM(csmmPoolKeys, 1_000e18);
     }
-
+/*
     function test_gas_multi_exactInput() public {
         // Swap Path: A --> B --> C
         Currency startCurrency = currencyA;
@@ -484,7 +484,7 @@ contract GasTest is SwapRouterFixtures {
             _snapshotString(false, false, TokenType.ERC20, TokenType.ERC20, "customCurve")
         );
     }
-
+*/
     function test_gas_single_exactInput() public {
         bool zeroForOne = true;
         PoolKey memory poolKey = vanillaPoolKeys[0];

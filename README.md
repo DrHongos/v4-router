@@ -1,3 +1,6 @@
+# Opinologos fork
+It overrides multihop request with the business specific ExactOut -> ExactIn that opinologos requires.
+
 # V4 Swap Router
 
 A simple and optimized router for swapping on Uniswap V4. ABI inspired by [`UniswapV2Router02`](https://github.com/Uniswap/v2-periphery/blob/master/contracts/UniswapV2Router02.sol).

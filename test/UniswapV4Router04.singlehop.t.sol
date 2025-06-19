@@ -13,7 +13,7 @@ import {BaseHook} from "@v4-periphery/src/base/hooks/BaseHook.sol";
 
 import {DeployPermit2} from "permit2/test/utils/DeployPermit2.sol";
 
-import {ISignatureTransfer, UniswapV4Router04} from "../src/UniswapV4Router04.sol";
+import {ISignatureTransfer, OpinologosRouter} from "../src/UniswapV4Router04.sol";
 
 import {
     SwapRouterFixtures,
@@ -28,7 +28,7 @@ import {HookMsgSender} from "./utils/hooks/HookMsgSender.sol";
 contract SinglehopTest is SwapRouterFixtures {
     using MockCurrencyLibrary for Currency;
 
-    UniswapV4Router04 router;
+    OpinologosRouter router;
 
     Counter hook;
 
@@ -44,7 +44,7 @@ contract SinglehopTest is SwapRouterFixtures {
         // Deploy v4 contracts
         Deployers.deployFreshManagerAndRouters();
         DeployPermit2.deployPermit2();
-        router = new UniswapV4Router04(manager, permit2);
+        router = new OpinologosRouter(manager, permit2);
 
         // Create currencies
         (currencyA, currencyB, currencyC, currencyD) = _createSortedCurrencies();

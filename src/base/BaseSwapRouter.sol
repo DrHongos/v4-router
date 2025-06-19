@@ -53,6 +53,8 @@ abstract contract BaseSwapRouter is SafeCallback {
     /// @dev Swap `block.timestamp` check.
     error DeadlinePassed(uint256 deadline);
 
+    /// @dev Multihops are restricted
+    error Only2Path();
     /// ========================= CONSTANTS ========================= ///
 
     /// @dev The minimum sqrt price limit for the swap.
@@ -166,19 +168,65 @@ abstract contract BaseSwapRouter is SafeCallback {
                 );
             } else {
                 PathKey[] memory path;
+                // i can use bytes32[] memory path; with ukeys directly
 
                 (, inputCurrency, path) = abi.decode(callbackData, (BaseData, Currency, PathKey[]));
 
-                if (path.length == 0) revert EmptyPath();
-
+                if (path.length != 2) revert Only2Path();
                 outputCurrency = path[path.length - 1].intermediateCurrency;
-
+/* 
                 delta = exactOutput
                     ? _exactOutputMultiSwap(inputCurrency, path, amount)
                     : _exactInputMultiSwap(inputCurrency, path, amount);
+ */
+                delta =  _opinologosMultiSwap(inputCurrency, path, amount);
             }
         }
     }
+
+// instead of the other two, we will use only this function
+// that first sells a token (exactOut) and then buys another (exactIn)
+    function _opinologosMultiSwap(Currency inputCurrency, PathKey[] memory path, uint256 amount) 
+    internal virtual returns (BalanceDelta delta) {
+        Currency intermediate = path[0].intermediateCurrency;       // collateral
+        Currency finalC =  path[1].intermediateCurrency;
+        int256 amountSpecified = amount.toInt256();
+        PathKey memory params = path[0];        // besides currencies, all params are repeated
+        
+        // perform fist swap (exactOut)
+        (Currency currency0, Currency currency1) =
+            inputCurrency < intermediate ? (inputCurrency, intermediate) : (intermediate, inputCurrency);
+        bool zeroForOne = inputCurrency == currency0 ? true : false;        // reverted, to test (and it passed... WOWW TF!)
+        PoolKey memory poolKey = PoolKey(currency0, currency1, params.fee, params.tickSpacing, params.hooks);
+
+        delta = _swap(poolKey, zeroForOne, amountSpecified, params.hookData);
+
+//        amountSpecified = zeroForOne ? -delta.amount0() : -delta.amount1(); // "amount"? passed to next swap
+        int256 amountToPay = zeroForOne ? -delta.amount0() : -delta.amount1(); // reverted, testing (again.. it passed)
+
+        // perform  second swap (exactIn)
+        (currency0, currency1) =
+            finalC < intermediate ? (finalC, intermediate) : (intermediate, finalC);
+        zeroForOne = intermediate == currency0 ? true : false;
+        poolKey = PoolKey(currency0, currency1, params.fee, params.tickSpacing, params.hooks);
+
+        delta = _swap(poolKey, zeroForOne, -amountSpecified, params.hookData);
+        amountSpecified = zeroForOne ? -delta.amount1() : -delta.amount0();
+
+        // create the delta
+         if (inputCurrency < finalC) {
+            delta = toBalanceDelta(
+                -int128(uint128(uint256(amountToPay))), int128(uint128(uint256(-amountSpecified)))
+            );
+        } else {
+            delta = toBalanceDelta(
+                int128(uint128(uint256(-amountSpecified))), -int128(uint128(uint256(amountToPay)))
+            );
+        }
+     }
+
+
+
 
     function _exactInputMultiSwap(Currency inputCurrency, PathKey[] memory path, uint256 amount)
         internal

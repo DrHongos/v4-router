@@ -16,7 +16,7 @@ import {
     IPoolManager,
     ISignatureTransfer,
     BaseData,
-    UniswapV4Router04,
+    OpinologosRouter,
     SwapFlags
 } from "../src/UniswapV4Router04.sol";
 
@@ -28,7 +28,7 @@ import {console} from "forge-std/console.sol";
 contract Router6909Test is SwapRouterFixtures {
     using MockCurrencyLibrary for Currency;
 
-    UniswapV4Router04 router;
+    OpinologosRouter router;
 
     Counter hook;
     CustomCurveHook hookCsmm;
@@ -46,7 +46,7 @@ contract Router6909Test is SwapRouterFixtures {
     function setUp() public payable {
         // Deploy v4 contracts
         Deployers.deployFreshManagerAndRouters();
-        router = new UniswapV4Router04(manager, permit2);
+        router = new OpinologosRouter(manager, permit2);
 
         // Create currencies
         (currencyA, currencyB, currencyC, currencyD) = _createSortedCurrencies();

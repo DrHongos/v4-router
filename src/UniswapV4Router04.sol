@@ -15,7 +15,7 @@ import {Multicallable} from "@solady/src/utils/Multicallable.sol";
 import {IPoolManager, SwapFlags, BaseData, BaseSwapRouter} from "./base/BaseSwapRouter.sol";
 
 /// @title Uniswap V4 Swap Router
-contract UniswapV4Router04 is IUniswapV4Router04, BaseSwapRouter, Multicallable {
+contract OpinologosRouter is IUniswapV4Router04, BaseSwapRouter, Multicallable {
     modifier setMsgSender() {
         Locker.set(msg.sender);
         _;

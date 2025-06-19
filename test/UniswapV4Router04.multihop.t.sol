@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
+/*
 pragma solidity ^0.8.26;
 
 import {Hooks} from "@v4/src/libraries/Hooks.sol";
@@ -907,3 +908,4 @@ contract MultihopTest is SwapRouterFixtures {
         );
     }
 }
+*/
