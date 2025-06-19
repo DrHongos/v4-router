@@ -196,13 +196,13 @@ abstract contract BaseSwapRouter is SafeCallback {
         // perform fist swap (exactOut)
         (Currency currency0, Currency currency1) =
             inputCurrency < intermediate ? (inputCurrency, intermediate) : (intermediate, inputCurrency);
-        bool zeroForOne = inputCurrency == currency0 ? true : false;        // reverted, to test (and it passed... WOWW TF!)
+        bool zeroForOne = inputCurrency == currency0 ? true : false;
         PoolKey memory poolKey = PoolKey(currency0, currency1, params.fee, params.tickSpacing, params.hooks);
 
         delta = _swap(poolKey, zeroForOne, amountSpecified, params.hookData);
 
-//        amountSpecified = zeroForOne ? -delta.amount0() : -delta.amount1(); // "amount"? passed to next swap
-        int256 amountToPay = zeroForOne ? -delta.amount0() : -delta.amount1(); // reverted, testing (again.. it passed)
+
+        int256 amountToPay = zeroForOne ? -delta.amount0() : -delta.amount1(); 
 
         // perform  second swap (exactIn)
         (currency0, currency1) =
